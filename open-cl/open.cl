@@ -12,6 +12,7 @@
 
 
 (require "~/quicklisp/asdf.lisp")
+(require "cl-ppcre")
 
 ;; reading cmd line args
 (dolist (element uiop:*command-line-arguments*)
@@ -19,3 +20,14 @@
   ;(write-line element))
 
 ;(princ (input-stream-p *standard-input*))
+
+;; testing conditionals
+;; if some-file is pdf, then run zathura
+(defparameter *some-file* "~/Documents/Books/sicp.pdf")
+(if (string= (ppcre:scan-to-strings ".+pdf" *some-file*) *some-file*)
+    (uiop:run-program `("zathura" ,*some-file*))
+    'not-true)
+
+(if (string= "f" "t")
+    'true
+    'false)
