@@ -49,13 +49,23 @@
 
 ;;;; perhaps I need two loops nested inside each other?
 ;;;; That would work, but feels wrong to do
+
 (defun string->list (str)
   (let ((list-string '()))
     (loop for letter from 0 to (- (length str) 1)
           if (equal (char str letter)  #\Space)
           do (push (char str letter) list-string)
           else 
-          do (push (list (char str letter)) (car list-string )))
+          do (push (char str letter) list-string))
+    (nreverse list-string)))
+
+;; Intended output: '((\#w \#o \#r \#d) \#Space (\#w \#o \#r \#d))
+
+(defun _debug_string->list (str)
+  "Take a string, split it into chars and add it into a list."
+  (let ((list-string '()))
+    (loop for x from 0 to (- (length str) 1)
+          do (push (char str x) list-string))
     (nreverse list-string)))
 
 ;; process the string into pig latin. 
@@ -64,20 +74,20 @@
         (popped-list (string->list str)))
     (cond 
       ((equal 
-             (vowel-or-cons? letter)
-             :consonant)
-;; collects the first letters of a word that are consonants into a list
-  (loop for x in (string->list str)
-      while (not (equal (vowel-or-cons? (string x)) :vowel))
-      collect (string x)
-      do (setf popped-list (cdr popped-list))
-      do (print popped-list))
+         (vowel-or-cons? letter)
+         :consonant)
+       ;; collects the first letters of a word that are consonants into a list
+       (loop for x in (string->list str)
+             while (not (equal (vowel-or-cons? (string x)) :vowel))
+             collect (string x)
+             do (setf popped-list (cdr popped-list))
+             do (print popped-list))
        )
       ((equal 
          (vowel-or-cons? letter)
          :vowel)
        (string-concat str "way"))
-    )
+      )
     ))
 
 ;; test function to make a list into a string. May not be neccessary
