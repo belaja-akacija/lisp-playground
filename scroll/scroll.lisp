@@ -1,7 +1,6 @@
 ;#!/home/belajaakacija/.local/bin/sbcl --script
 ;;;; Take a string from stdin and make it scroll across the screen
 
-
 (load "~/quicklisp/setup.lisp")
 (ql:quickload "uiop" :silent t)
 ;(ql:quickload :with-user-abort :silent t)
@@ -11,17 +10,6 @@
     (loop for x from 0 to (- (length str) 1)
           do (push (char str x) list-string))
     (nreverse list-string)))
-
-;; for an element x in the list:
-;; clear the screen
-;; print from element x to x+3
-;; sleep for 1/2 second
-
-
-;; pop the first element off
-;; nreverse the list
-;; push it to the list 
-;; nreverse it again
 
 (defun scroll (str)
   "Scrolls the given text on the screen"
@@ -49,4 +37,4 @@
 ;; for a SIGINT signal and handle that to restore the cursor back to its orginal state
 ;(format t "~C[?25l" #\Esc)
 
-(scroll "hello world")
+(scroll "I wuv my rowie")
