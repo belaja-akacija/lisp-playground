@@ -20,98 +20,53 @@
 ;; nreverse the new list
 
 
-(require "cl-ppcre")
-
+(ql:quickload "cl-ppcre")
 
 ;;; working functions
 
 (defun vowel-or-cons? (str)
   (let ((some-char (char str 0)))
     (cond
-    ((not (characterp some-char))
-           'not-char)
-    ((not (alpha-char-p some-char))
-     'not-letter)
-    ((string-equal (car (multiple-value-list (cl-ppcre:scan-to-strings "[aeiouAEIOU]" str))) 
-                   some-char)
-          :vowel)
-    ((string-equal (car (multiple-value-list (cl-ppcre:scan-to-strings "[^{aeiouAEIOU}]" str))) 
-                   some-char)
-          :consonant))))
+      ((not (characterp some-char))
+       'not-char)
+      ((not (alpha-char-p some-char))
+       'not-letter)
+      ((string-equal (car (multiple-value-list (cl-ppcre:scan-to-strings "[aeiouAEIOU]" str))) 
+                     some-char)
+       :vowel)
+      ((string-equal (car (multiple-value-list (cl-ppcre:scan-to-strings "[^{aeiouAEIOU}]" str))) 
+                     some-char)
+       :consonant))))
+
+;; unneccesary function, but good one to keep 
+(defun string->list (str) 
+  "Converts the string into a list of chars"
+  (defun string-helper (str counter len)
+    (if (> counter len) '()
+        (cons (char str counter) (string-helper str (+ counter 1) len))))
+  (if (null str) '()
+      (string-helper str 0 (- (length str) 1))))
 
 
-;;; in development 
-
-;; make a string into a list, with the structure:
-;; '((#\w #\o #\r #\d) #\Space (#\w #\o #\r #\d))
-;; what are the conditions for the loop do I have to make in order for the list be properly nested?
-;;;; 1. how do I nest a list?
-
-;;;; perhaps I need two loops nested inside each other?
-;;;; That would work, but feels wrong to do
-
-(defun string->list (str)
-  (let ((list-string '()))
-    (loop for letter from 0 to (- (length str) 1)
-          if (equal (char str letter)  #\Space)
-          do (push (char str letter) list-string)
-          else 
-          do (push (char str letter) list-string))
-    (nreverse list-string)))
-
-;; Intended output: '((\#w \#o \#r \#d) \#Space (\#w \#o \#r \#d))
-
-(defun _debug_string->list (str)
-  "Take a string, split it into chars and add it into a list."
-  (let ((list-string '()))
-    (loop for x from 0 to (- (length str) 1)
-          do (push (char str x) list-string))
-    (nreverse list-string)))
-
-;; process the string into pig latin. 
-(defun str-process (str)
-  (let ((letter (string (car (string->list str))))
-        (popped-list (string->list str)))
-    (cond 
-      ((equal 
-         (vowel-or-cons? letter)
-         :consonant)
-       ;; collects the first letters of a word that are consonants into a list
-       (loop for x in (string->list str)
-             while (not (equal (vowel-or-cons? (string x)) :vowel))
-             collect (string x)
-             do (setf popped-list (cdr popped-list))
-             do (print popped-list))
-       )
-      ((equal 
-         (vowel-or-cons? letter)
-         :vowel)
-       (string-concat str "way"))
-      )
-    ))
-
-
-;; test function to make a list into a string. May not be neccessary
-(defun list->string (lst)
-  (let ((some-var '()))
-    (loop for x from )))
-
-
-;; test the loop
-;; expected behaviour: take the first letters of the string that are consonants and append them to a list
-;; then all the rest of the values, append them into another list. (or in the same list, just in front of the consonant values that were popped off in the beginning) 
-;; this may not be possible with this method. Consider other solutions
-
-(let ((some-list '()))
-  (loop named outer 
-        for x in (string->list "hhhello world")
-        do
-        (progn 
-          (loop named inner
-                while (not (equal (vowel-or-cons? (string x)) :vowel))
-                collect x into y
-                )
-          collect x)))
-
-;when (equal (vowel-or-cons? (string x)) :vowel)
-;collect x into y))
+(defun string->pig-latin (str)
+  "Takes a string and makes it into pig latin"
+  (let ((word (cl-ppcre:split "\\s+" str)))
+    (defun str-proc-help (lst str)
+      (if (null lst) '()
+          (let* ((popped-word (car lst))
+                 (first-letter (subseq popped-word 0 1))
+                 (length-of-cons (car (nreverse 
+                                        (loop for x from 0 to (1- (length popped-word))
+                                              until (equal (vowel-or-cons? 
+                                                             (subseq popped-word x (length popped-word))) 
+                                                           :vowel)
+                                              collect x)))))
+            (cond 
+              ((equal (vowel-or-cons? first-letter) :consonant)
+               (princ (string-concat (subseq popped-word (1+ length-of-cons) (length popped-word))
+                                     (subseq popped-word 0 (1+ length-of-cons)) "ay " ))
+               (str-proc-help (cdr lst) str))
+              ((equal (vowel-or-cons? first-letter) :vowel)
+               (princ (string-concat popped-word "way "))
+               (str-proc-help (cdr lst) str))))))
+    (str-proc-help word str)))
