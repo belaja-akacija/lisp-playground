@@ -50,7 +50,8 @@
 
 (defun string->pig-latin (str)
   "Takes a string and makes it into pig latin"
-  (let ((word (cl-ppcre:split "\\s+" str)))
+  (let ((word (cl-ppcre:split "\\s+" str))
+        (proc-string ""))
     (defun str-proc-help (lst str)
       (if (null lst) '()
           (let* ((popped-word (car lst))
@@ -63,10 +64,14 @@
                                               collect x)))))
             (cond 
               ((equal (vowel-or-cons? first-letter) :consonant)
-               (princ (string-concat (subseq popped-word (1+ length-of-cons) (length popped-word))
-                                     (subseq popped-word 0 (1+ length-of-cons)) "ay " ))
+               ;(princ (string-concat (subseq popped-word (1+ length-of-cons) (length popped-word))
+               ;(subseq popped-word 0 (1+ length-of-cons)) "ay " ))
+               (setf proc-string (string-concat proc-string (subseq popped-word (1+ length-of-cons) (length popped-word))
+                                                (subseq popped-word 0 (1+ length-of-cons)) "ay " ))
                (str-proc-help (cdr lst) str))
               ((equal (vowel-or-cons? first-letter) :vowel)
-               (princ (string-concat popped-word "way "))
-               (str-proc-help (cdr lst) str))))))
+               ;(princ (string-concat popped-word "way "))
+               (setf proc-string (string-concat proc-string popped-word "way "))
+               (str-proc-help (cdr lst) str)))))
+      proc-string) ; return the completed string in pig latin
     (str-proc-help word str)))
