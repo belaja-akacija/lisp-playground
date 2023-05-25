@@ -38,6 +38,17 @@
                      some-char)
        :consonant))))
 
+(defun vowelp (chr)
+  (cond 
+    ((not (characterp chr))
+     (error "not character"))
+    ((not (alpha-char-p chr))
+     (error "not an alpha char"))
+    ((string-equal (car (multiple-value-list (cl-ppcre:scan-to-strings "[aeiouAEIOU]" (string chr)))) (string chr))
+     t)
+    ((string-equal (car (multiple-value-list (cl-ppcre:scan-to-strings "{^[aeiouAEIOU]}" (string chr)))) (string chr))
+     nil)))
+
 ;; unneccesary function, but good one to keep 
 (defun string->list (str) 
   "Converts the string into a list of chars"
@@ -47,31 +58,33 @@
   (if (null str) '()
       (string-helper str 0 (- (length str) 1))))
 
-
-(defun string->pig-latin (str)
-  "Takes a string and makes it into pig latin"
-  (let ((word (cl-ppcre:split "\\s+" str))
-        (proc-string ""))
-    (defun str-proc-help (lst str)
-      (if (null lst) '()
-          (let* ((popped-word (car lst))
-                 (first-letter (subseq popped-word 0 1))
-                 (length-of-cons (car (nreverse 
-                                        (loop for x from 0 to (1- (length popped-word))
-                                              until (equal (vowel-or-cons? 
-                                                             (subseq popped-word x (length popped-word))) 
-                                                           :vowel)
-                                              collect x)))))
-            (cond 
-              ((equal (vowel-or-cons? first-letter) :consonant)
-               ;(princ (string-concat (subseq popped-word (1+ length-of-cons) (length popped-word))
-               ;(subseq popped-word 0 (1+ length-of-cons)) "ay " ))
-               (setf proc-string (string-concat proc-string (subseq popped-word (1+ length-of-cons) (length popped-word))
-                                                (subseq popped-word 0 (1+ length-of-cons)) "ay " ))
-               (str-proc-help (cdr lst) str))
-              ((equal (vowel-or-cons? first-letter) :vowel)
-               ;(princ (string-concat popped-word "way "))
-               (setf proc-string (string-concat proc-string popped-word "way "))
-               (str-proc-help (cdr lst) str)))))
-      proc-string) ; return the completed string in pig latin
-    (str-proc-help word str)))
+    (defun string->pig-latin (str)
+      "Returns a string in pig latin"
+      (let ((processed-string "")
+            (word (cl-ppcre:split "\\s+" str)))
+        (labels ((string-processing-helper (lst str)
+                   (if (null lst) nil
+                         (let* ((popped-word (car lst))
+                                (first-letter (char popped-word 0))
+                                (length-of-word (1- (length popped-word)))
+                                (consonant-cluster (car (nreverse
+                                                          (loop for x from 0 to length-of-word
+                                                                until (vowelp (char popped-word x))
+                                                                collect x)))))
+                           (if (vowelp first-letter)
+                               (progn
+                                  (setf processed-string 
+                                        (string-concat 
+                                          processed-string 
+                                          popped-word "way "))
+                                  (string-processing-helper (cdr lst) str))
+                               (progn
+                                  (setf processed-string 
+                                        (string-concat 
+                                          processed-string 
+                                          (subseq popped-word (1+ consonant-cluster) (length popped-word))
+                                          (subseq popped-word 0 (1+ consonant-cluster)) 
+                                          "ay "))
+                                  (string-processing-helper (cdr lst) str)))))
+                   processed-string)); return string
+          (string-processing-helper word str))))
