@@ -22,22 +22,6 @@
 
 (ql:quickload "cl-ppcre")
 
-;;; working functions
-
-(defun vowel-or-cons? (str)
-  (let ((some-char (char str 0)))
-    (cond
-      ((not (characterp some-char))
-       'not-char)
-      ((not (alpha-char-p some-char))
-       'not-letter)
-      ((string-equal (car (multiple-value-list (cl-ppcre:scan-to-strings "[aeiouAEIOU]" str))) 
-                     some-char)
-       :vowel)
-      ((string-equal (car (multiple-value-list (cl-ppcre:scan-to-strings "[^{aeiouAEIOU}]" str))) 
-                     some-char)
-       :consonant))))
-
 (defun vowelp (chr)
   (cond 
     ((not (characterp chr))
@@ -49,6 +33,38 @@
     ((string-equal (car (multiple-value-list (cl-ppcre:scan-to-strings "{^[aeiouAEIOU]}" (string chr)))) (string chr))
      nil)))
 
+(defun string->pig-latin (str)
+  "Returns a string in pig latin"
+  (let ((processed-string "")
+        (word (cl-ppcre:split "\\s+" str)))
+    (labels ((string-processing-helper (lst str)
+               (if (null lst) nil
+                   (let* ((popped-word (car lst))
+                          (first-letter (char popped-word 0))
+                          (length-of-word (1- (length popped-word)))
+                          (consonant-cluster 
+                            (car (nreverse
+                                   (loop for x from 0 to length-of-word
+                                         until (vowelp (char popped-word x))
+                                         collect x)))))
+                     (if (vowelp first-letter)
+                         (progn
+                           (setf processed-string 
+                                 (string-concat 
+                                   processed-string 
+                                   popped-word "way "))
+                           (string-processing-helper (cdr lst) str))
+                         (progn
+                           (setf processed-string 
+                                 (string-concat 
+                                   processed-string 
+                                   (subseq popped-word (1+ consonant-cluster) (length popped-word))
+                                   (subseq popped-word 0 (1+ consonant-cluster)) 
+                                   "ay "))
+                           (string-processing-helper (cdr lst) str)))))
+               processed-string)); return string
+      (string-processing-helper word str))))
+
 ;; unneccesary function, but good one to keep 
 (defun string->list (str) 
   "Converts the string into a list of chars"
@@ -58,33 +74,3 @@
   (if (null str) '()
       (string-helper str 0 (- (length str) 1))))
 
-    (defun string->pig-latin (str)
-      "Returns a string in pig latin"
-      (let ((processed-string "")
-            (word (cl-ppcre:split "\\s+" str)))
-        (labels ((string-processing-helper (lst str)
-                   (if (null lst) nil
-                         (let* ((popped-word (car lst))
-                                (first-letter (char popped-word 0))
-                                (length-of-word (1- (length popped-word)))
-                                (consonant-cluster (car (nreverse
-                                                          (loop for x from 0 to length-of-word
-                                                                until (vowelp (char popped-word x))
-                                                                collect x)))))
-                           (if (vowelp first-letter)
-                               (progn
-                                  (setf processed-string 
-                                        (string-concat 
-                                          processed-string 
-                                          popped-word "way "))
-                                  (string-processing-helper (cdr lst) str))
-                               (progn
-                                  (setf processed-string 
-                                        (string-concat 
-                                          processed-string 
-                                          (subseq popped-word (1+ consonant-cluster) (length popped-word))
-                                          (subseq popped-word 0 (1+ consonant-cluster)) 
-                                          "ay "))
-                                  (string-processing-helper (cdr lst) str)))))
-                   processed-string)); return string
-          (string-processing-helper word str))))
