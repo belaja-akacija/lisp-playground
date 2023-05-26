@@ -1,11 +1,11 @@
 (require "~/quicklisp/asdf.lisp")
 
-(defun check-network ()
+(defun check-networkp ()
   (format t "Checking network status...~%")
   (let ((exit-code (pop (cddr (multiple-value-list (uiop:run-program '("ping" "-c 1" "-W 5" "gnu.org") :error-output :string :ignore-error-status t))))))
     (if (zerop exit-code)
-      (princ 'connected)
-      (on-fail))))
+        t
+        nil)))
 
 
 (defun on-fail ()
@@ -20,6 +20,12 @@
        (uiop:run-program '("st" "nmtui")))
       (t (format t "~%Invalid command. Please try again.~%~%")
          (on-fail)))))
+
+(defun network-check-helper () 
+"check network again after opening nmtui on fail"
+(if (check-networkp)
+    (print 'connected)
+    (progn (on-fail) (network-check-helper))))
 
 (defun show-pass ()
 (let ((exit-code (pop (cddr 

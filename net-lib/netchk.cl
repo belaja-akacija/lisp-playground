@@ -2,4 +2,4 @@
 
 (require "~/.local/lib/lisp/net-lib.cl")
 
-(check-network)
+(network-check-helper)
