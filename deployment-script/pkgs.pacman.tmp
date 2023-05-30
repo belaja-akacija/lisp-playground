@@ -13,7 +13,6 @@ bc
 bind
 bison
 brightnessctl
-cadence
 cameractrls
 clang
 clisp
@@ -50,6 +49,7 @@ imagemagick
 inetutils
 intel-ucode
 iptables
+jdk-openjdk
 keepassxc
 libfixposix
 libimobiledevice
@@ -98,7 +98,6 @@ ranger
 redshift
 ripgrep
 rlwrap
-roswell
 rsync
 ruby
 rust

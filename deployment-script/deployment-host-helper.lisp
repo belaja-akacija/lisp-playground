@@ -34,9 +34,9 @@
     (labels ((helper (list)
                (if (null list) '()
                    (progn
-                     (setq package-list (string-concat package-list (car list) " "))
+                     (setq package-list (string-concat package-list " " (car list)))
                      (helper (cdr list))))))
       (helper file-list))
     (if (equal filename *aur*)
-        (string-concat "aur -S " package-list)
-        (string-concat "sudo pacman -S " package-list))))
+        (string-concat "aur -S" package-list)
+        (string-concat "sudo pacman -S" package-list))))
