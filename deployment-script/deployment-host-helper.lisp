@@ -2,8 +2,8 @@
 ;;;; transfer over to a new computer. Assumes Arch install.
 
 (defun get-package-list ()
-  (shell "pacman -Qnq > pkgs.pacman.tmp")
-  (shell "pacman -Qmq > pkgs.aur.tmp")
+  (shell "pacman -Qneq > pkgs.pacman.tmp")
+  (shell "pacman -Qmeq > pkgs.aur.tmp")
   (values #P"pkgs.pacman.tmp"
           #P"pkgs.aur.tmp")) ;; return the name of the file to use as param in the other functions
 
