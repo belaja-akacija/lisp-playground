@@ -1,23 +1,13 @@
-;;#!/usr/bin/clisp
 ;;;; deploy on a directory that has a bunch of wallpapers and change the
 ;;;; current wallpaper with a random one using `feh`
 
-;(require "~/quicklisp/asdf.lisp")
 (load #P"~/quicklisp/asdf.lisp")
-;(ql:quickload :uiop)
 
 (defparameter *wallpapers* (directory "~/Pictures/Wallpapers/*"))
 
 (defun random-from-range (start end)
   "generate a random number in a range"
   (+ start (random (+ 1 (- end start)) (make-random-state t)))) ; look up later why you have to add (make-random-state) to make this work in compiled files
-
-(defun file-iterator (files)
-  "iterate through the list of files in a directory"
-  (if (null files) '()
-      (progn
-        (print (car files))
-        (file-iterator (cdr files)))))
 
 (defun indexer (index list)
   "go to a particular index in list and pull it out"
