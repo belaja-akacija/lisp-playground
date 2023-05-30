@@ -21,4 +21,3 @@
   (let* ((random-index (random-from-range 0 (1- (length *wallpapers*))))
          (random-wallpaper (namestring (indexer random-index *wallpapers*))))
     (uiop:run-program `("feh" "-z" "-Z" "--bg-center" ,random-wallpaper))))
-    ;(shell (string-concat "feh " random-wallpaper))))
