@@ -7,8 +7,6 @@
         t ;connected
         nil)))
 
-
-;; TODO find out how to update the input variable after the invalid command case
 (defun on-fail ()
   (format t "~%~tNetwork check failed.~%Do you wish to open nmtui? [Y/n]: ")
   (let ((input (string-downcase (read-line))))
@@ -16,12 +14,11 @@
       ((string-equal "" input)
        (uiop:run-program '("st" "nmtui")))
       ((equal #\n (char input 0))
-       '())
+       input) ; returns the input, so network-check-helper can break out of loop
       ((equal #\y (char input 0))
        (uiop:run-program '("st" "nmtui")))
       (t (format t "~%Invalid command. Please try again.~%")
-         (on-fail)))
-    input)) ; returns the input, so network-check-helper can break out of loop
+         (on-fail))))) 
 
 (defun network-check-helper () 
 "check network again after opening nmtui on fail"
