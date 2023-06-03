@@ -10,15 +10,8 @@
   "generate a random number in a range"
   (+ start (random (+ 1 (- end start)) (make-random-state t))))
 
-(defun indexer (index list)
-  "go to a particular index in list and pull it out"
-  (labels ((indexer-helper (iterator index list)
-             (if (= iterator index) (car list) 
-                 (indexer-helper (1+ iterator) index (cdr list)))))
-    (indexer-helper 0 index list)))
-
 (defun wallpaper-changer ()
   "change to a random wallpaper using feh"
   (let* ((random-index (random-from-range 0 (1- (length *wallpapers*))))
-         (random-wallpaper (namestring (indexer random-index *wallpapers*)))) ; lookup namestring for future reference. I keep forgetting what it does until I need it again.
+         (random-wallpaper (namestring (nth random-index *wallpapers*)))) ; lookup namestring for future reference. I keep forgetting what it does until I need it again.
     (uiop:run-program `("feh" "-Z" "--bg-center" ,random-wallpaper))))
