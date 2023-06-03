@@ -21,9 +21,9 @@
 
 (defun network-check-helper () 
   "check network again after opening nmtui on fail"
-  (format t "Checking network status...~%")
+  (format t "~%Checking network status...~%")
   (if (check-network-p)
-      (print 'connected)
+      (format t "Connected~%~%")
       (if (string-equal (on-fail) "n") '()
           (network-check-helper))))
 
