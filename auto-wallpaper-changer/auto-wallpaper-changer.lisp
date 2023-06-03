@@ -1,5 +1,6 @@
 ;;;; deploy on a directory that has a bunch of wallpapers and change the
 ;;;; current wallpaper with a random one using `feh`
+;;;; Useful in .xinitrc or as a cronjob
 
 (load #P"~/quicklisp/asdf.lisp")
 
@@ -20,4 +21,4 @@
   "change to a random wallpaper using feh"
   (let* ((random-index (random-from-range 0 (1- (length *wallpapers*))))
          (random-wallpaper (namestring (indexer random-index *wallpapers*))))
-    (uiop:run-program `("feh" "-z" "-Z" "--bg-center" ,random-wallpaper))))
+    (uiop:run-program `("feh" "-Z" "--bg-center" ,random-wallpaper))))
