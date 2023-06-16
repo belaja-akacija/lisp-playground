@@ -1,7 +1,7 @@
 ;#!/home/belajaakacija/.local/bin/sbcl --script
 ;;;; Take a string from stdin and make it scroll across the screen
 
-(load "~/quicklisp/setup.lisp")
+-(load "~/quicklisp/setup.lisp")
 (ql:quickload "uiop" :silent t)
 ;(ql:quickload :with-user-abort :silent t)
 

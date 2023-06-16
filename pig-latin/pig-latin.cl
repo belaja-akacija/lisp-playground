@@ -6,7 +6,7 @@
 
 
 ;; write a function that can tell the difference between a consonant and vowel
-;; iterate through the word until the first vowel is found 
+;; iterate through the word until the first vowel is found
 ;; pop the consonant(s) off the beginning of the word
 ;; store the consonant(s) in a variable. (or a list)
 ;; apply "ay" to the consonant var
@@ -23,7 +23,7 @@
 (ql:quickload "cl-ppcre")
 
 (defun vowelp (chr)
-  (cond 
+  (cond
     ((not (characterp chr))
      (error "not character"))
     ((not (alpha-char-p chr))
@@ -42,35 +42,34 @@
                    (let* ((popped-word (car lst))
                           (first-letter (char popped-word 0))
                           (length-of-word (1- (length popped-word)))
-                          (consonant-cluster 
+                          (consonant-cluster
                             (car (nreverse
                                    (loop for x from 0 to length-of-word
                                          until (vowelp (char popped-word x))
                                          collect x)))))
                      (if (vowelp first-letter)
                          (progn
-                           (setf processed-string 
-                                 (string-concat 
-                                   processed-string 
+                           (setf processed-string
+                                 (string-concat
+                                   processed-string
                                    popped-word "way "))
                            (string-processing-helper (cdr lst) str))
                          (progn
-                           (setf processed-string 
-                                 (string-concat 
-                                   processed-string 
+                           (setf processed-string
+                                 (string-concat
+                                   processed-string
                                    (subseq popped-word (1+ consonant-cluster) (length popped-word))
-                                   (subseq popped-word 0 (1+ consonant-cluster)) 
+                                   (subseq popped-word 0 (1+ consonant-cluster))
                                    "ay "))
                            (string-processing-helper (cdr lst) str)))))
                processed-string)); return string
       (string-processing-helper word str))))
 
-;; unneccesary function, but good one to keep 
-(defun string->list (str) 
+;; unneccesary function, but good one to keep
+(defun string->list (str)
   "Converts the string into a list of chars"
   (defun string-helper (str counter len)
     (if (> counter len) '()
         (cons (char str counter) (string-helper str (+ counter 1) len))))
   (if (null str) '()
       (string-helper str 0 (- (length str) 1))))
-
