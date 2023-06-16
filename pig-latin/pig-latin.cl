@@ -73,3 +73,5 @@
         (cons (char str counter) (string-helper str (+ counter 1) len))))
   (if (null str) '()
       (string-helper str 0 (- (length str) 1))))
+
+(print "test")
