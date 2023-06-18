@@ -7,7 +7,9 @@
 
 (defparameter *lowercase* (cl-ppcre:split "" "abcdefghijklmnopqrstuvwxyz"))
 (defparameter *uppercase* (cl-ppcre:split "" "ABCDEFGHIJKLMNOPQRSTUVWXYZ"))
-(defparameter *special* (cl-ppcre:split "" "!@#$%^&*()[]"))
+(defparameter *logograms* (cl-ppcre:split "" "#$%&@^`~"))
+(defparameter *punctuation* (cl-ppcre:split "" ".,:;"))
+(defparameter *math-symbols* (cl-ppcre:split "" "<>*+!?="))
 
 (defun random-list (lst)
   (random (length lst) (make-random-state t)))
@@ -27,19 +29,24 @@
       (helper lst)
       str)))
 
-(defun generate-password (lower upper spec)
+;; TODO maybe make a &rest so that each element is optional?
+(defun generate-password (lower upper logo &key (length 32))
   (let ((random-list '())
         (actual-list '()))
-    (loop for x from 0 to 32
+    ;; figure out how to test every optional argument
+    ;; test if null. If t, set it to ""
+    ;(if (null all-optionals) (setf the-optional "")
+        ;(do-nothing))
+    (loop for x from 0 to length
           do (progn
                (push (nth (random-list lower) lower) random-list )
-               (push (nth (random-list spec) spec) random-list )
+               (push (nth (random-list logo) logo) random-list )
                (push (nth (random-list upper) upper) random-list)))
-    (loop for x from 0 to 32
+    (loop for x from 0 to length
           do (push (nth (random-list random-list) random-list) actual-list))
     actual-list))
 
 (defun generate-password-string ()
-  (list->string (generate-password *lowercase* *uppercase* *special*)))
+  (list->string (generate-password *lowercase* *uppercase* *logograms*)))
 
 (format t "~A~%" (generate-password-string))
