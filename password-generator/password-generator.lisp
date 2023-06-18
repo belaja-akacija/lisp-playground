@@ -13,12 +13,16 @@
   (random (length lst) (make-random-state t)))
 
 (defun list->string (lst)
+  "generate a string from a list"
   (let ((str ""))
     (labels ((helper (lst)
                (if (null lst)
                    nil
                    (progn
-                     (setf str (string-concat str (car lst)))
+                     (setf str (string-concat str
+                                              (if (numberp (car lst))
+                                                  (string (digit-char (car lst)))
+                                                  (string (car lst)))))
                      (helper (cdr lst))))))
       (helper lst)
       str)))
