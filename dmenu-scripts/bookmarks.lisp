@@ -3,6 +3,8 @@
 ;;;; TODO
 ;;;; - Fix the need to put double quotes for certain links, when adding new entries
 ;;;; - Finish the rest of the cases
+;;;; - create yad dialog box for the (show-usage) output
+;;;; - add delete entry function
 
 (load "~/quicklisp/setup.lisp")
 (ql:quickload "cl-ppcre")
@@ -54,6 +56,7 @@
          (bmks-add))
         ((not (null (find *first-arg* '("help" "h") :test #'string-equal)))
          (show-usage))
-        ((string-equal "nil" *first-arg*)
-         (bmks-display))))
+        ((not (null (find *first-arg* '("nil" "ls") :test #'string-equal)))
+         (bmks-display))
+        (t (show-usage))))
 (main)
