@@ -2,9 +2,6 @@
 
 ;;; TODO
 ;;; - Fix the need to put double quotes for certain links, when adding new entries
-;;; - Finish the rest of the cases
-;;; ✓ create yad dialog box for the (show-usage) output
-;;; - add delete entry function
 
 (defparameter *browser* "firefox") ;; think about using xdg-open instead
 (defparameter *url-file-path* #P "~/Documents/.bkmks/")
@@ -74,6 +71,4 @@
          (show-usage))
         ((not (null (find (nth 1 sb-ext:*posix-argv*) '("nil" "ls") :test #'string-equal)))
          (bkmks-send))
-        ;((string-equal "test" *first-arg*)
-        ;(show-dialog (format nil "Error!") :justify "center"))
         (t (show-usage))))
