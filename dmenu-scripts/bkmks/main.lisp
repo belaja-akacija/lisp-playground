@@ -27,10 +27,9 @@
                        If you would prefer to have your bookmarks stored in an alternate locatation, there are also variables that can be changed for that. The default is /home/user/.bkmks/urls~%")))
 
 (defun bkmks-check ()
+  (ensure-directories-exist *url-file-path*)
   (cond ((null (probe-file *url-full-path*))
          (show-dialog (format nil "Error: No bookmarks found to display. Try adding some!~%~%")))
-        ((null (directory *url-file-path*))
-         (uiop:run-program `("mkdir" "-v", (directory-namestring *url-file-path*))))
         (t (format nil "Everything OK."))))
 
 (defun bkmks-display ()
