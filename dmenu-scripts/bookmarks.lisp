@@ -1,6 +1,6 @@
 #!/home/belajaakacija/.local/bin/sbcl --script
 
-;;;; Port of the bmks dmenu script from the suckless website, with my own twist.
+;;;; Port of the bkmks dmenu script from the suckless website, with my own twist.
 ;;;; Author: belaja-akacija
 ;;;; V.0.5
 
@@ -14,7 +14,7 @@
 (ql:quickload "cl-ppcre")
 
 (defparameter *browser* "firefox")
-(defparameter *url-file-path* #P "~/Documents/.bmks/")
+(defparameter *url-file-path* #P "~/Documents/.bkmks/")
 (defparameter *url-file-name* "urls")
 (defparameter *url-full-path* (merge-pathnames *url-file-path* (pathname *url-file-name*)))
 (defparameter *first-arg* (string-downcase (car uiop:*command-line-arguments*)))
@@ -32,14 +32,14 @@
 
     Configuration is done by directly editing the script.
 
-    If you would prefer to have your bookmarks stored in an alternate locatation, there are also variables that can be changed for that. The default is /home/user/.bmks/urls~%")))
+    If you would prefer to have your bookmarks stored in an alternate locatation, there are also variables that can be changed for that. The default is /home/user/.bkmks/urls~%")))
 
 (defun append->file (url desc)
   (with-open-file (output *url-full-path* :direction :output
                           :if-exists :append :if-does-not-exist :create)
     (format output "~A | ~A~%" url desc)))
 
-(defun bmks-add ()
+(defun bkmks-add ()
   (let ((desc ""))
     (if (null (cadr uiop:*command-line-arguments*))
         (show-dialog (format nil "Error: url must be provided.~%~%") :justify "center")
@@ -48,23 +48,24 @@
           (print desc)
           (append->file (cadr uiop:*command-line-arguments*) (string-trim '(#\NewLine) desc))))))
 
-(defun bmks-display ()
+(defun bkmks-display ()
   ;; This is currently seeming quite messy and bulky
-  (let ((bmks-length  (string-trim `(#\NewLine) (uiop:run-program `("wc" "-l")
+  (bkmks-check)
+  (let ((bkmks-length  (string-trim `(#\NewLine) (uiop:run-program `("wc" "-l")
                                                                   :input *url-full-path*
                                                                   :output :string)))
         (raw-entry "")
         (filtered-entry ""))
-    (setq raw-entry (uiop:run-program `("dmenu" "-l", bmks-length)
+    (setq raw-entry (uiop:run-program `("dmenu" "-l", bkmks-length)
                                       :input *url-full-path*
                                       :output :string))
     (setq filtered-entry (cl-ppcre:scan-to-strings ".\+\(?=\\|\)" (string-trim '(#\NewLine) raw-entry)))
     (uiop:run-program `(,*browser* ,filtered-entry))))
 
-(defun bmks-check ()
+(defun bkmks-check ()
   (cond ((null (probe-file *url-full-path*))
-         (show-dialgo (format nil "Error: No bookmarks found to display. Try adding some!~%~%")))
-        ((null (probe-directory *url-file-path*))
+         (show-dialog (format nil "Error: No bookmarks found to display. Try adding some!~%~%")))
+        ((null (directory *url-file-path*))
          (uiop:run-program `("mkdir" "-v", (directory-namestring *url-file-path*))))
         (t (format nil "Everything OK."))))
 
@@ -80,12 +81,12 @@
                      :output :string)))
 
 (defun main ()
-  (cond ((string-equal "add" *first-arg*)
-         (bmks-add))
+  (cond ((not (null (find *first-arg* '("add" "a") :test #'string-equal)))
+         (bkmks-add))
         ((not (null (find *first-arg* '("help" "h") :test #'string-equal)))
          (show-usage))
         ((not (null (find *first-arg* '("nil" "ls") :test #'string-equal)))
-         (bmks-display))
+         (bkmks-display))
         ;((string-equal "test" *first-arg*)
          ;(show-dialog (format nil "Error!") :justify "center"))
         (t (show-usage))))
